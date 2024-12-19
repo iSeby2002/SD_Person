@@ -1,0 +1,171 @@
+#version: '3'
+#
+#services:
+#
+#  reverse-proxy:
+#    image: traefik:v3.2
+#    command:
+#      - --api.insecure=true
+#      - --providers.docker
+#      - --accesslog=true
+#      - --accesslog.filepath=/var/log/traefik/access.log
+#      - --log.level=DEBUG
+#      - --entrypoints.web.address=:80
+#    ports:
+#      - "80:80"
+#      - "8080:8080"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - traefik_logs:/var/log/traefik
+#    networks:
+#      - myNetwork
+#
+#  device-backend-container:
+#    image: device_img
+##    ports:
+##      - "8081:8081"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.device-backend-container.rule=Host(`device.localhost`) || PathPrefix(`/dm`)"
+#      - "traefik.http.services.device-backend-container.loadbalancer.server.port=8081"
+#    deploy:
+#      replicas: 2
+#    environment:
+#      DB_IP: postgres-container-device
+#      DB_PORT: 5432
+#      DB_DBNAME: device-db
+#      DB_USER: postgres
+#      DB_PASSWORD: Damian_sebi10
+#    depends_on:
+#      - postgres-container-device
+#    networks:
+#      - myNetwork
+#
+#  postgres-container-device:
+#    image: postgres:latest
+#    ports:
+#      - "5434:5432"
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: Damian_sebi10
+#      POSTGRES_DATABASE: device-db
+#    volumes:
+#      - postgres_device_db:/var/lib/postgresql/data
+#    networks:
+#      - myNetwork
+#
+#  user-backend-container:
+#    image: user_img
+##    ports:
+##      - "8080:8080"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.user-backend-container.rule=Host(`user.localhost`)"
+#      - "traefik.http.services.user-backend-container.loadbalancer.server.port=8080"
+#    deploy:
+#      replicas: 2
+#    environment:
+#      DB_IP: postgres-container-user
+#      DB_PORT: 5432
+#      DB_DBNAME: user-db
+#      DB_USER: postgres
+#      DB_PASSWORD: Damian_sebi10
+#      DEVICE_SERVICE_URL: http://reverse-proxy/dm
+#    depends_on:
+#      - postgres-container-user
+#    networks:
+#      - myNetwork
+#
+#  postgres-container-user:
+#    image: postgres:latest
+#    ports:
+#      - "5433:5432"
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: Damian_sebi10
+#      POSTGRES_DATABASE: user-db
+#    volumes:
+#      - postgres_user_db:/var/lib/postgresql/data
+#    networks:
+#      - myNetwork
+#
+#  monitoring-backend-container:
+#    image: monitoring_img
+##    ports:
+##      - "8082:8082"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.monitoring-backend-container.rule=Host(`monitoring.localhost`)"
+#      - "traefik.http.services.monitoring-backend-container.loadbalancer.server.port=8082"
+#    environment:
+#      DB_IP: postgres-container-monitoring
+#      DB_PORT: 5432
+#      DB_DBNAME: monitoring-db
+#      DB_USER: postgres
+#      DB_PASSWORD: Damian_sebi10
+#    depends_on:
+#      - postgres-container-monitoring
+#    networks:
+#      - myNetwork
+#
+#  postgres-container-monitoring:
+#    image: postgres:latest
+#    ports:
+#      - "5435:5432"
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: Damian_sebi10
+#      POSTGRES_DATABASE: monitoring-db
+#    volumes:
+#      - postgres_monitoring_db:/var/lib/postgresql/data
+#    networks:
+#      - myNetwork
+#
+#  chat-backend-container:
+#    image: chat_img
+#    #    ports:
+#    #      - "8083:8083"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.chat-backend-container.rule=Host(`chat.localhost`)"
+#      - "traefik.http.services.chat-backend-container.loadbalancer.server.port=8083"
+#    networks:
+#      - myNetwork
+#
+#  react-app:
+#    build:
+#      context: ../../frontend/front
+#      dockerfile: Dockerfile
+##    ports:
+##      - "3003:80"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.react-app.rule=Host(`frontend.localhost`)"
+#      - "traefik.http.services.react-app.loadbalancer.server.port=80"
+#    environment:
+##      - REACT_APP_BACKEND1_URL=http://user-backend-container:8080  # URL pentru backend-ul user
+##      - REACT_APP_BACKEND2_URL=http://device-backend-container:8081  # URL pentru backend-ul device
+##      - REACT_APP_BACKEND3_URL=http://monitoring-backend-container:8082  # URL pentru backend-ul device
+#      - REACT_APP_BACKEND1_URL=http://user.localhost
+#      - REACT_APP_BACKEND2_URL=http://device.localhost/dm
+#      - REACT_APP_BACKEND3_URL=http://monitoring.localhost
+#      - REACT_APP_WS_BASE_URL=http://monitoring.localhost
+#    depends_on:
+#      - user-backend-container
+#      - device-backend-container
+#      - monitoring-backend-container
+#    networks:
+#      - myNetwork
+#
+#networks:
+#  myNetwork:
+#    driver: bridge
+#
+#volumes:
+#  traefik_logs:
+#  postgres_user_db:
+#    external: true
+#  postgres_device_db:
+#    external: true
+#  postgres_monitoring_db:
+#    external: true
