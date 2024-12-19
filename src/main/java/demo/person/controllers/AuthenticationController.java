@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
         "http://localhost:8080",
         "http://localhost:8081",
         "http://localhost:8082",
-        "http://localhost:8083"})
+        "http://localhost:8083",
+        "https://heroic-boba-6ce237.netlify.app"})
 @RequestMapping("/auth")
 public class AuthenticationController {
     private final JwtService jwtService;

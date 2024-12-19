@@ -62,7 +62,8 @@ public class SecurityConfiguration {
                 "http://localhost:8080",
                 "http://localhost:8081",
                 "http://localhost:8082",
-                "http://localhost:8083"));
+                "http://localhost:8083",
+                "https://heroic-boba-6ce237.netlify.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
 
